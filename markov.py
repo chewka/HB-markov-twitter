@@ -44,30 +44,47 @@ def make_chains(text_string):
 def make_text(chains):
     """Take dictionary of Markov chains; return random text."""
 
-    key = choice(chains.keys())
+    key = choice(list(chains.keys()))
     words = [key[0], key[1]]
-    while key in chains:
+
+    char_length = 0
+    char_limit = 280
+
+    while key in chains and char_length < char_limit:
+
+        if key not in list(chains.keys()):
+            break
+
+        else:
+            word = choice(chains[key])
+            words.append(word)
+            key = (key[1], word)
+            char_length += len(word)+2
+
+
         # Keep looping until we have a key that isn't in the chains
         # (which would mean it was the end of our original text).
         #
         # Note that for long texts (like a full book), this might mean
         # it would run for a very long time.
 
-        word = choice(chains[key])
-        words.append(word)
-        key = (key[1], word)
 
     return " ".join(words)
 
 
 def tweet(chains):
-    """Create a tweet and send it to the Internet."""
+    #"""Create a tweet and send it to the Internet."""
 
     # Use Python os.environ to get at environmental variables
     # Note: you must run `source secrets.sh` before running this file
     # to make sure these environmental variables are set.
 
-    pass
+    user_choice = input("Enter to tweet again [q to quit] > ")
+    if user_choice == "q":
+        exit()
+    else:
+        twitter.status(make_text(chains))
+
 
 
 # Get the filenames from the user through a command line prompt, ex:
@@ -79,6 +96,6 @@ text = open_and_read_file(filenames)
 
 # Get a Markov chain
 chains = make_chains(text)
-
+print(make_text(chains))
 # Your task is to write a new function tweet, that will take chains as input
 # tweet(chains)
